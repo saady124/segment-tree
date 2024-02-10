@@ -1,0 +1,57 @@
+
+struct segtree
+{
+  int size=1;
+  vector<int>mins;
+  void init(int n)
+  {
+     while(size<n)size*=2;
+     mins.assign(2*size,OO);
+  }
+  void build(vector<int>&a)
+  {
+    build(a,0,0,size);
+  }
+  void build(vector<int>&a,int x,int lx,int ry)
+  {
+      if(ry-lx==1)
+      {
+        if(lx<a.size())
+        mins[x]=a[lx];
+        return ;
+      }
+      int mid=(lx+ry)/2;
+      build(a,2*x+1,lx,mid);
+      build(a,2*x+2,mid,ry);
+      mins[x]=min(mins[2*x+1],mins[2*x+2]);
+  }
+  void set(int i,int v)
+  {
+    set(i,v,0,0,size);
+  }
+  void set(int i,int v,int x,int lx,int ry)
+  {
+     if(ry-lx==1)
+     {
+        mins[x]=v;
+        return;
+     }
+     int mid=(lx+ry)/2;
+     if(i<mid)
+        set(i,v,2*x+1,lx,mid);
+     else 
+        set(i,v,2*x+2,mid,ry);
+     mins[x]=min(mins[2*x+1],mins[2*x+2]);
+  }
+  int minimum(int l,int r)
+  {
+    return minimum(l,r,0,0,size);
+  }
+  int minimum(int l,int r,int x,int lx,int ry)
+  {
+     if(lx>=r||ry<=l)return OO;
+     if(lx>=l&&ry<=r)return mins[x];
+     int mid=(lx+ry)/2;
+     return min(minimum(l,r,2*x+1,lx,mid),minimum(l,r,2*x+2,mid,ry));
+  }
+};
