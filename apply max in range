@@ -1,0 +1,77 @@
+struct segtree
+{
+  int size=1;
+  vector<int>maxs;
+  void init(int n)
+  {
+     while(size<n)size*=2;
+     maxs.assign(2*size,0ll);
+  }
+  void build(vector<int>&a)
+  {
+    build(a,0,0,size);
+  }
+  void build(vector<int>&a,int x,int lx,int ry)
+  {
+      if(ry-lx==1)
+      {
+        if(lx<a.size())
+        maxs[x]=a[lx];
+        return ;
+      }
+      int mid=(lx+ry)/2;
+      build(a,2*x+1,lx,mid);
+      build(a,2*x+2,mid,ry);
+      maxs[x]=max(maxs[2*x+1],maxs[2*x+2]);
+  }
+  void set(int i,int v)
+  {
+    set(i,v,0,0,size);
+  }
+  void set(int i,int v,int x,int lx,int ry)
+  {
+     if(ry-lx==1)
+     {
+        maxs[x]=v;
+        return;
+     }
+     int mid=(lx+ry)/2;
+     if(i<mid)
+        set(i,v,2*x+1,lx,mid);
+     else 
+        set(i,v,2*x+2,mid,ry);
+     maxs[x]=max(maxs[2*x+1],maxs[2*x+2]);
+  }
+  void change(int l,int r,int v)
+  {
+       change(l,r,v,0,0,size);
+  }
+  void change(int l,int r,int v,int x,int lx,int ry)
+  {
+      if(ry<=r&&lx>=l)
+      {
+        maxs[x]=max(maxs[x],v);
+        return;
+      }
+      if(ry<=l||lx>=r)return ;
+      int mid=(lx+ry)/2;
+      change(l,r,v,2*x+1,lx,mid);
+      change(l,r,v,2*x+2,mid,ry);
+  }
+  int get(int i)
+  {
+    return get(i,0,0,size);
+  }
+  int get(int i,int x,int lx,int ry)
+  {
+     if(ry-lx==1)return maxs[x];
+     int mid=(lx+ry)/2;
+     if(i<mid)return max(get(i,2*x+1,lx,mid),maxs[x]);
+     else return max(get(i,2*x+2,mid,ry),maxs[x]);
+  }
+};
+{
+    elsady
+    //test
+       solve();
+}
