@@ -1,0 +1,73 @@
+struct segtree
+{
+  int size=1;
+  vector<int>sums,operations;
+  void init(int n)
+  {
+     while(size<n)size*=2;
+     sums.assign(2*size,0ll);
+     operations.assign(2*size,OO);
+  }
+  void propygate(int l,int r,int x)
+  {
+     if(r-l==1||operations[x]==OO)
+     {
+        operations[x]=OO;
+        return ;
+     }
+     int mid=(l+r)/2;
+     operations[2*x+1]=operations[x];
+     operations[2*x+2]=operations[x];
+     sums[2*x+1]=operations[x]*(mid-l);
+     sums[2*x+2]=operations[x]*(r-mid);
+     operations[x]=OO;
+  }
+  void build(vector<int>&a)
+  {
+    build(a,0,0,size);
+  }
+  void build(vector<int>&a,int x,int lx,int ry)
+  {
+      if(ry-lx==1)
+      {
+        if(lx<a.size())
+        sums[x]=a[lx];
+        return ;
+      }
+      int mid=(lx+ry)/2;
+      build(a,2*x+1,lx,mid);
+      build(a,2*x+2,mid,ry);
+      sums[x]=(sums[2*x+1]+sums[2*x+2]);
+  }
+  void modify(int l,int r,int v)
+  {
+    modify(l,r,v,0,0,size);
+  }
+  void modify(int l,int r,int v,int x,int lx,int ry)
+  {
+     propygate(lx,ry,x);
+     if(ry<=l||lx>=r)return ;
+     if(ry<=r&&lx>=l)
+     {
+         sums[x]=v*(ry-lx);
+         operations[x]=v;
+         return ;
+     }
+     int mid=(lx+ry)/2;
+     modify(l,r,v,2*x+1,lx,mid);
+     modify(l,r,v,2*x+2,mid,ry);
+     sums[x]=(sums[2*x+1]+sums[2*x+2]);
+  }
+  int sum(int l,int r)
+  {
+    return sum(l,r,0,0,size);
+  }
+  int sum(int l,int r,int x,int lx,int ry)
+  {
+     propygate(lx,ry,x);
+     if(lx>=r||ry<=l)return 0;
+     if(lx>=l&&ry<=r)return sums[x];
+     int mid=(lx+ry)/2;
+     return (sum(l,r,2*x+1,lx,mid)+sum(l,r,2*x+2,mid,ry));
+  }
+};
