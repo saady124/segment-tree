@@ -70,8 +70,4 @@ struct segtree
      else return max(get(i,2*x+2,mid,ry),maxs[x]);
   }
 };
-{
-    elsady
-    //test
-       solve();
-}
+
