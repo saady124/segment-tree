@@ -1,0 +1,96 @@
+struct segtree
+{
+  int size=1;
+  vector<pair<int,int>>op;
+  vector<int>sums;
+  void init(int n)
+  {
+     while(size<n)size*=2;
+     sums.assign(2*size,0ll);
+     op.assign(2*size,{0ll,-1ll});
+  }
+  void propygate_add(int l,int r,int x)
+  {
+     if(r-l==1||op[x].sc==-1)
+     {
+        op[x]={0,-1};
+        return ;
+     }
+     int mid=(l+r)/2;
+     op[2*x+1].fs+=op[x].fs;
+     op[2*x+2].fs+=op[x].fs;
+     op[2*x+1].sc=max(op[2*x+1].sc,0ll);
+     op[2*x+2].sc=max(op[2*x+2].sc,0ll);
+     sums[2*x+1]+=op[x].fs*(mid-l);
+     sums[2*x+2]+=op[x].fs*(r-mid);
+     op[x]={0,-1};
+  }
+  void propygate_asn(int l,int r,int x)
+  {
+     if(r-l==1||op[x].sc==-1)
+     {
+        op[x]={0,-1};
+        return ;
+     }
+     int mid=(l+r)/2;
+     op[2*x+1].fs=op[x].fs;
+     op[2*x+2].fs=op[x].fs;
+     op[2*x+1].sc=op[2*x+2].sc=1;
+     sums[2*x+1]=op[x].fs*(mid-l);
+     sums[2*x+2]=op[x].fs*(r-mid);
+     op[x]={0,-1};
+  }
+  void modify_asn(int l,int r,int v)
+  {
+    modify_asn(l,r,v,0,0,size);
+  }
+  void modify_asn(int l,int r,int v,int x,int lx,int ry)
+  {
+     if(op[x].sc==1)propygate_asn(lx,ry,x);
+     else propygate_add(lx,ry,x);
+     if(ry<=l||lx>=r)return ;
+     if(ry<=r&&lx>=l)
+     {
+         sums[x]=v*(ry-lx);
+         op[x]={v,1};
+         return ;
+     }
+     int mid=(lx+ry)/2;
+     modify_asn(l,r,v,2*x+1,lx,mid);
+     modify_asn(l,r,v,2*x+2,mid,ry);
+     sums[x]=(sums[2*x+1]+sums[2*x+2]);
+  }
+  void modify_add(int l,int r,int v)
+  {
+    modify_add(l,r,v,0,0,size);
+  }
+  void modify_add(int l,int r,int v,int x,int lx,int ry)
+  {
+     if(op[x].sc==1)propygate_asn(lx,ry,x);
+     else propygate_add(lx,ry,x);
+     if(ry<=l||lx>=r)return ;
+     if(ry<=r&&lx>=l)
+     {
+         sums[x]+=v*(ry-lx);
+         op[x]={v,0};
+         return ;
+     }
+     int mid=(lx+ry)/2;
+     modify_add(l,r,v,2*x+1,lx,mid);
+     modify_add(l,r,v,2*x+2,mid,ry);
+     sums[x]=(sums[2*x+1]+sums[2*x+2]);
+  }
+  int sum(int l,int r)
+  {
+    return sum(l,r,0,0,size);
+  }
+  int sum(int l,int r,int x,int lx,int ry)
+  {
+     if(op[x].sc==1)propygate_asn(lx,ry,x);
+     else propygate_add(lx,ry,x);
+     if(lx>=r||ry<=l)return 0;
+     if(lx>=l&&ry<=r)return sums[x];
+     int mid=(lx+ry)/2;
+     return (sum(l,r,2*x+1,lx,mid)+sum(l,r,2*x+2,mid,ry));
+  }
+};
